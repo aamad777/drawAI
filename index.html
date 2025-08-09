@@ -7,183 +7,23 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap" rel="stylesheet">
-  <!-- On-device AI for Draw -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
-  <!-- Main module -->
   <script type="module" src="modules/main.js"></script>
 </head>
 <body>
-  <header class="app-header">
-    <div class="brand">
-      <span class="brand-emoji">🎈</span>
-      <h1>Kids AI Playground</h1>
-    </div>
-    <button id="muteBtn" class="btn pill" aria-pressed="false" title="Toggle voice">
-      🔊 Voice On
-    </button>
-  </header>
-
-  <div id="onboarding" class="onboarding">
-    <section class="step active" data-step="1" aria-labelledby="step1-title">
-      <h2 id="step1-title">👋 Hello! What’s your name?</h2>
-      <p class="hint">Type your name and press Continue.</p>
-      <div class="row">
-        <input id="kidName" type="text" placeholder="Your name…" aria-label="Your name" />
-        <button id="toStep2" class="btn big">Continue ➜</button>
-      </div>
-    </section>
-
-    <section class="step" data-step="2" aria-labelledby="step2-title">
-      <h2 id="step2-title">How old are you?</h2>
-      <p class="hint">Pick the picture that matches your age.</p>
-
-      <div class="age-grid">
-        <button class="age-card" data-age="2-4" aria-label="Age 2 to 4">
-          <div class="fallback-art" aria-hidden="true">2–4</div>
-          <div class="label">2–4 years</div>
-        </button>
-        <button class="age-card" data-age="5-8" aria-label="Age 5 to 8">
-          <div class="fallback-art" aria-hidden="true">5–8</div>
-          <div class="label">5–8 years</div>
-        </button>
-      </div>
-
-      <div class="nav">
-        <button class="btn ghost" data-back>← Back</button>
-      </div>
-    </section>
-
-    <section class="step" data-step="3" aria-labelledby="step3-title">
-      <h2 id="step3-title">What do you want to do?</h2>
-      <p class="hint">Pick one to start!</p>
-
-      <div class="activity-grid">
-        <button class="activity-card" data-activity="talk" aria-label="Talk">
-          <div class="icon">💬</div>
-          <div class="title">Talk</div>
-          <div class="desc">Chat by voice or typing</div>
-        </button>
-        <button class="activity-card" data-activity="draw" aria-label="Draw">
-          <div class="icon">🎨</div>
-          <div class="title">Draw</div>
-          <div class="desc">Colors, crayons & stickers</div>
-        </button>
-        <button class="activity-card" data-activity="photo" aria-label="Photo">
-          <div class="icon">📸</div>
-          <div class="title">Photo</div>
-          <div class="desc">Camera + fun filters</div>
-        </button>
-      </div>
-
-      <div class="nav">
-        <button class="btn ghost" data-back>← Back</button>
-      </div>
-    </section>
-  </div>
-
-  <main class="grid app hidden" id="appRoot" aria-live="polite">
-    <div class="welcome-banner" id="welcomeBanner"></div>
-
-    <section class="card app-section" data-app="talk" aria-labelledby="voice-title">
-      <h2 id="voice-title">🎤 Talk to Me</h2>
-      <p class="hint">Hold the mic and say “hello”, “tell me a joke”, or “give me a math quiz”.</p>
-
-      <div class="chat">
-        <div class="bubbles" id="chatLog" aria-live="polite" aria-atomic="false"></div>
-      </div>
-
-      <div class="controls">
-        <button id="micBtn" class="btn big">🎙️ Hold to Talk</button>
-        <button id="typeBtn" class="btn">⌨️ Type Instead</button>
-      </div>
-
-      <div class="typebox hidden" id="typeBox">
-        <input id="textInput" type="text" placeholder="Type your message…" aria-label="Type your message" />
-        <button id="sendBtn" class="btn">Send</button>
-      </div>
-
-      <div class="row">
-        <label for="voiceSelect">Voice:</label>
-        <select id="voiceSelect" aria-label="Choose voice"></select>
-      </div>
-    </section>
-
-    <section class="card app-section" data-app="photo" aria-labelledby="cam-title">
-      <h2 id="cam-title">📸 Camera Fun</h2>
-      <p class="hint">Start camera, take a snapshot, and try a filter!</p>
-
-      <div class="camera">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="photoCanvas" width="640" height="480" aria-label="Snapshot canvas"></canvas>
-      </div>
-
-      <div class="controls wrap">
-        <button id="startCamBtn" class="btn">📷 Start Camera</button>
-        <button id="snapBtn" class="btn">📸 Take Snapshot</button>
-        <label for="filterSelect">Filter:</label>
-        <select id="filterSelect">
-          <option value="none">None</option>
-          <option value="grayscale">Grayscale</option>
-          <option value="invert">Invert</option>
-          <option value="rainbow">Rainbow</option>
-          <option value="comic">Comic</option>
-        </select>
-        <button id="downloadPhotoBtn" class="btn">⬇️ Download Photo</button>
-      </div>
-    </section>
-
-    <section class="card app-section" data-app="draw" aria-labelledby="draw-title">
-      <h2 id="draw-title">🎨 Drawing Pad</h2>
-      <p class="hint">Pick a color and draw! Add stickers too.</p>
-
-      <div class="toolbar">
-        <div class="palette" role="radiogroup" aria-label="Choose color">
-          <button class="swatch" data-color="#ff595e" aria-checked="false" role="radio" title="Red"></button>
-          <button class="swatch" data-color="#ffca3a" aria-checked="false" role="radio" title="Yellow"></button>
-          <button class="swatch" data-color="#8ac926" aria-checked="false" role="radio" title="Green"></button>
-          <button class="swatch" data-color="#1982c4" aria-checked="false" role="radio" title="Blue"></button>
-          <button class="swatch" data-color="#6a4c93" aria-checked="false" role="radio" title="Purple"></button>
-          <button class="swatch" data-color="#000000" aria-checked="false" role="radio" title="Black"></button>
-          <button class="swatch" data-color="#ffffff" aria-checked="false" role="radio" title="White (eraser)"></button>
-        </div>
-
-        <label class="slider">
-          Size
-          <input id="brushSize" type="range" min="2" max="40" value="10" />
-        </label>
-
-        <div class="stickers">
-          <button class="sticker">⭐</button>
-          <button class="sticker">🌈</button>
-          <button class="sticker">🐱</button>
-          <button class="sticker">🦄</button>
-          <button class="sticker">🍭</button>
-        </div>
-
-        <div class="spacer"></div>
-        <button id="clearBtn" class="btn">🧽 Clear</button>
-        <button id="saveDrawingBtn" class="btn">⬇️ Save Drawing</button>
-      </div>
-
-      <canvas id="drawCanvas" width="800" height="500" aria-label="Drawing canvas"></canvas>
-
-      <div class="row">
-        <button id="aiGuessBtn" class="btn">🤖 What’s this?</button>
-        <button id="showPicBtn" class="btn">🖼️ Show picture</button>
-        <div id="aiGuessLabel" class="hint"></div>
-      </div>
-
-      <div id="aiPicBox" class="ai-pic hidden" aria-live="polite"></div>
-    </section>
-
-    <div class="nav under">
-      <button id="changeChoice" class="btn ghost">← Change choice</button>
-    </div>
-  </main>
-
-  <footer class="app-footer">
-    <small>Made with ❤️ for kids. Works best in Chrome/Edge on desktop. Microphone & camera ask permission.</small>
-  </footer>
-</body>
-</html>
+<header class="app-header"><div class="brand"><span class="brand-emoji">🎈</span><h1>Kids AI Playground</h1></div><button id="muteBtn" class="btn pill">🔊 Voice On</button></header>
+<div id="onboarding" class="onboarding">
+  <section class="step active" data-step="1"><h2>👋 Hello! What’s your name?</h2><div class="row"><input id="kidName" type="text" placeholder="Your name…"><button id="toStep2" class="btn big">Continue ➜</button></div></section>
+  <section class="step" data-step="2"><h2>How old are you?</h2><div class="age-grid"><button class="age-card" data-age="2-4"><div class="fallback-art">2–4</div><div class="label">2–4 years</div></button><button class="age-card" data-age="5-8"><div class="fallback-art">5–8</div><div class="label">5–8 years</div></button></div><div class="nav"><button class="btn ghost" data-back>← Back</button></div></section>
+  <section class="step" data-step="3"><h2>What do you want to do?</h2><div class="activity-grid"><button class="activity-card" data-activity="talk"><div class="icon">💬</div><div class="title">Talk</div></button><button class="activity-card" data-activity="draw"><div class="icon">🎨</div><div class="title">Draw</div></button><button class="activity-card" data-activity="photo"><div class="icon">📸</div><div class="title">Photo</div></button></div><div class="nav"><button class="btn ghost" data-back>← Back</button></div></section>
+</div>
+<main class="grid app hidden" id="appRoot" aria-live="polite">
+  <div class="welcome-banner" id="welcomeBanner"></div>
+  <section class="card app-section" data-app="talk"><h2>🎤 Talk to Me</h2><div class="chat"><div class="bubbles" id="chatLog"></div></div><div class="controls"><button id="micBtn" class="btn big">🎙️ Hold to Talk</button><button id="typeBtn" class="btn">⌨️ Type Instead</button></div><div class="typebox hidden" id="typeBox"><input id="textInput" type="text" placeholder="Type your message…"><button id="sendBtn" class="btn">Send</button></div><div class="row"><label>Voice:</label><select id="voiceSelect"></select></div></section>
+  <section class="card app-section" data-app="photo"><h2>📸 Camera Fun</h2><div class="camera"><video id="video" autoplay playsinline></video><canvas id="photoCanvas" width="640" height="480"></canvas></div><div class="controls"><button id="startCamBtn" class="btn">📷 Start Camera</button><button id="snapBtn" class="btn">📸 Take Snapshot</button><label>Filter:</label><select id="filterSelect"><option value="none">None</option><option value="grayscale">Grayscale</option><option value="invert">Invert</option></select><button id="downloadPhotoBtn" class="btn">⬇️ Download Photo</button></div></section>
+  <section class="card app-section" data-app="draw"><h2>🎨 Drawing Pad</h2><div class="toolbar"><div class="palette" role="radiogroup"><button class="swatch" data-color="#ff595e"></button><button class="swatch" data-color="#ffca3a"></button><button class="swatch" data-color="#8ac926"></button><button class="swatch" data-color="#1982c4"></button><button class="swatch" data-color="#6a4c93"></button><button class="swatch" data-color="#000000"></button><button class="swatch" data-color="#ffffff"></button></div><label>Size <input id="brushSize" type="range" min="2" max="40" value="10"></label><div class="stickers"><button class="btn ghost sticker">⭐</button><button class="btn ghost sticker">🌈</button><button class="btn ghost sticker">🐱</button></div><div class="spacer"></div><button id="clearBtn" class="btn">🧽 Clear</button><button id="saveDrawingBtn" class="btn">⬇️ Save Drawing</button></div><canvas id="drawCanvas" width="800" height="500"></canvas><div class="row"><button id="aiGuessBtn" class="btn">🤖 What’s this?</button><button id="showPicBtn" class="btn">🖼️ Show picture</button><div id="aiGuessLabel" class="hint"></div></div><div id="aiPicBox" class="ai-pic hidden"></div></section>
+  <div class="nav under"><button id="changeChoice" class="btn ghost">← Change choice</button></div>
+</main>
+<footer class="app-footer"><small>Modular build. Mic/camera need HTTPS.</small></footer>
+</body></html>
