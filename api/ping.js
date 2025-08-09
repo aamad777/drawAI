@@ -1,5 +1,8 @@
+// api/ping.js
 module.exports = async (req, res) => {
-  const ok = true;
-  const envHasKey = !!process.env.GEMINI_API_KEY;
-  res.status(200).json({ ok, runtime: "node", envHasKey });
+  return res.status(200).json({
+    ok: true,
+    runtime: 'node',
+    envHasKey: Boolean(process.env.GEMINI_API_KEY || false)
+  });
 };

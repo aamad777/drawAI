@@ -1,6 +1,7 @@
+// api/ask.js (CommonJS for Vercel Node runtime)
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ text: 'Method not allowed' });
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  const { GEMINI_API_KEY } = process.env;
   if (!GEMINI_API_KEY) return res.status(500).json({ text: 'Missing GEMINI_API_KEY' });
   try {
     const { message, name = 'friend', age = '5-8' } = req.body || {};
@@ -12,13 +13,12 @@ module.exports = async (req, res) => {
 - For ages 2–4: use very simple words. For 5–8: a bit more detailed.`;
     const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + GEMINI_API_KEY;
     const body = { contents: [{ role: 'user', parts: [{ text: `${system}\n\nChild name: ${name}; Age: ${age}\n\nChild said: ${message}` }]}], generationConfig: { temperature: 0.8, maxOutputTokens: 200 } };
-    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (!r.ok) return res.status(500).json({ text: 'Gemini API error' });
-    const data = await r.json();
+    const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!resp.ok) return res.status(500).json({ text: 'Gemini API error' });
+    const data = await resp.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm not sure—try again?";
     return res.status(200).json({ text });
   } catch (e) {
-    console.error(e);
     return res.status(500).json({ text: 'Server error' });
   }
 };
