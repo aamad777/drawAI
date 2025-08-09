@@ -1,39 +1,24 @@
-// /api/ask.js — Vercel Serverless Function using Gemini (free tier in Google AI Studio)
+// api/ask.js
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ text: "Method not allowed" });
-
+  if (req.method !== 'POST') return res.status(405).json({ text: 'Method not allowed' });
   const { GEMINI_API_KEY } = process.env;
-  if (!GEMINI_API_KEY) return res.status(500).json({ text: "Missing GEMINI_API_KEY" });
-
+  if (!GEMINI_API_KEY) return res.status(500).json({ text: 'Missing GEMINI_API_KEY' });
   try {
-    const { message, name = "friend", age = "5-8" } = req.body || {};
-    if (!message || typeof message !== "string") return res.status(400).json({ text: "No message" });
-
+    const { message, name = 'friend', age = '5-8' } = req.body || {};
+    if (!message || typeof message !== 'string') return res.status(400).json({ text: 'No message' });
     const system = `You are a friendly, age-aware Kids AI.
 - Be positive, simple, and encouraging.
 - Keep answers short (1–3 sentences) unless asked for more.
 - Avoid unsafe topics; redirect kindly to kid-friendly subjects.
 - For ages 2–4: use very simple words. For 5–8: a bit more detailed.`;
-
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + GEMINI_API_KEY;
-
-    const body = {
-      contents: [{ role: "user", parts: [{ text: `${system}\n\nChild name: ${name}; Age: ${age}\n\nChild said: ${message}` }]}],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 200 }
-    };
-
-    const resp = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    if (!resp.ok) {
-      const t = await resp.text();
-      console.error("Gemini error", resp.status, t);
-      return res.status(500).json({ text: "Gemini API error" });
-    }
-
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + GEMINI_API_KEY;
+    const body = { contents: [{ role: 'user', parts: [{ text: `${system}\n\nChild name: ${name}; Age: ${age}\n\nChild said: ${message}` }]}], generationConfig: { temperature: 0.8, maxOutputTokens: 200 } };
+    const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!resp.ok) return res.status(500).json({ text: 'Gemini API error' });
     const data = await resp.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm not sure—try again?";
     return res.status(200).json({ text });
   } catch (e) {
-    console.error(e);
-    return res.status(500).json({ text: "Server error" });
+    return res.status(500).json({ text: 'Server error' });
   }
 }

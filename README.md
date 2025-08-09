@@ -1,18 +1,16 @@
-# Kids AI — Modular (Gemini + Voice + AI Draw + Camera)
+# Kids AI — Modular (Gemini + Voice + Draw + Camera)
 
-## Files
-- `modules/helpers.js` — shared state + stepper + routing helpers
-- `modules/main.js` — onboarding + wiring
-- `modules/chat.js` — text & voice chat (calls `/api/ask` → Gemini)
-- `modules/draw.js` — drawing pad + MobileNet guess + picture reveal
-- `modules/camera.js` — camera + filters + save
-- `api/ask.js` — Vercel serverless using Gemini 1.5 Flash (needs `GEMINI_API_KEY`)
-- `public/*.svg` — simple images for draw reveal
-- `index.html`, `style.css`, `vercel.json`
+- `modules/main.js` → onboarding + routing
+- `modules/helpers.js` → shared state + utils
+- `modules/chat.js` → text+voice chat (calls `/api/ask` → Gemini)
+- `modules/draw.js` → drawing pad + on-device AI guess (MobileNet) + picture reveal
+- `modules/camera.js` → camera + filters + download
+- `api/ask.js` → Vercel serverless, needs `GEMINI_API_KEY`
+- `public/*.svg` → simple pictures for the draw reveal
 
-## Deploy (Vercel)
-1) Push all files to a new GitHub repo.
+## Deploy on Vercel
+1) Push files to a new GitHub repo.
 2) Vercel → New Project → Import.
 3) Settings → Environment Variables:
-   - `GEMINI_API_KEY` = your key from Google AI Studio.
-4) Deploy → open the URL.
+   - `GEMINI_API_KEY` = your Google AI Studio key
+4) Deploy. Test the site.
